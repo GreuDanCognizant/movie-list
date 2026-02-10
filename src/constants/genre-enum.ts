@@ -1,0 +1,1 @@
+export const enum CATEGORI_GENRE{"horror","action","fantasy"}
