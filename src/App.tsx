@@ -8,7 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 export default function App() {
   return (
     <BrowserRouter>
-          <Header userName={"Dan"} />
+      <Header />
 
       <div className="flex h-screen">
         <Sidebar items={sidebarItems} />
@@ -21,6 +21,7 @@ export default function App() {
 
         </div>
       </div>
+      
       <Footer />
     </BrowserRouter>
   );

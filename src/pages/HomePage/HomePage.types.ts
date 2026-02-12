@@ -5,4 +5,6 @@ export interface MovieItem {
   genre: string; 
   rating: string; 
   status?: string;
+  year?:string;
+  description?:string
 }
