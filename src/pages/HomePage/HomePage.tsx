@@ -1,4 +1,3 @@
-// Home.tsx
 import  { FC, useEffect, useMemo, useState } from "react";
 import moviesJson from "../../assets/movies.json"
 import { MovieItem } from "./HomePage.types";
@@ -9,10 +8,11 @@ import { CATEGORI_GENRE } from "../../constants/genre-enum";
 import { blueButton } from "../../constants/class-name-style";
 import { WatchedMovies } from "../../local-storage/localStorage.types";
 import NothingToShow from "../../components/NothingToShow/NothingToShow";
+import Icon from "../../components/IconsManager/IconManager";
 
 const HomePage: FC = () => {
   const [movies, setMovies] = useState<MovieItem[]>([]); 
-  const [value,setValue] =useState('');
+  const [inputValue,setInputValue] =useState('');
   const [filter,setFilter]=useState({arg:'',filterArg:''});
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -21,9 +21,11 @@ const HomePage: FC = () => {
 
     if (mappedMovies.length === 0) {
       setMovies(moviesJson);
+
     } else {
       const moviesSaved = moviesJson.map(el => {
-        const updated = mappedMovies.find((m: WatchedMovies) => m.title === el.title);
+        const updated = mappedMovies.find((movie: WatchedMovies) => movie.title === el.title);
+
         return updated ? { ...el, status: updated.status } : el;
       });
 
@@ -33,6 +35,7 @@ const HomePage: FC = () => {
     setTimeout(() => { 
       setLoading(false); 
     }, 1500);
+
   }, []); 
 
   useEffect(() => {
@@ -47,18 +50,18 @@ const HomePage: FC = () => {
   }, [movies]);
 
   const updateStatus = (id: number, newStatus: string) => { 
-    setMovies((prev) => prev.map((m) => m.id === id ? { ...m, status: newStatus } : m ) ); 
+    setMovies((prev) => prev.map((movie) => movie.id === id ? { ...movie, status: newStatus } : movie ) ); 
   };
 
   const filteredMovies = useMemo(() => {
     let result = movies;
 
-    if (value.trim() !== "") {
+    if (inputValue.trim() !== "") {
       result = result.filter(el =>
-        el.title.toLowerCase().startsWith(value.toLowerCase())
+        el.title.toLowerCase().startsWith(inputValue.toLowerCase())
       );
     }
-    
+
     switch (filter.filterArg) {
       case "genre":
         return result.filter(el => el.genre === filter.arg);
@@ -89,39 +92,92 @@ const HomePage: FC = () => {
       default:
         return result;
     }
-  }, [filter, movies, value]);
+  }, [filter, movies, inputValue]);
 
 
   return ( 
     <>
-      <InputSearch placeholder="Search movies ..." value={value} setValue={setValue} />
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex w-auto h-auto md:flex-wrap gap-4">
-        <p className="py-4 font-bold text-black">Filter by: </p>
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
+        <InputSearch placeholder="Search movies ..." value={inputValue} setValue={setInputValue} />
+
+        <Icon value={"FilterOpen"} className="pt-1 text-2xl"/>
+
         <p className="py-4 font-bold text-black">Genre:  </p>
 
-        <Button value={CATEGORI_GENRE["0"]} className={blueButton}
-        onClick={(e) => setFilter(prev => ({ ...prev,arg:e.target.value, filterArg: "genre" }))}/>
-
-        <Button value={CATEGORI_GENRE["1"]} className={blueButton} onClick={(e) => setFilter(prev => ({ ...prev,arg:e.target.value, filterArg: "genre" }))}/>
-
-        <Button value={CATEGORI_GENRE["2"]} className={blueButton} onClick={(e) => setFilter(prev => ({ ...prev,arg:e.target.value, filterArg: "genre" }))}/>
-
-        <p className="py-4 font-bold text-black">Alphabetic: </p>
-
-        <Button value={"A->Z"} className={blueButton}  onClick={(e) => setFilter(prev => ({ ...prev,filterArg: (e.target.value) }))}/>
-        <p className="py-4 font-bold text-black">Rating: </p>
-
-        <Button value={"Rating up"} className={blueButton}  onClick={(e) => setFilter(prev => ({ ...prev,filterArg: (e.target.value==="Rating up"?"rating-asc":"rating-dsc") }))}/>
-        <Button value={"Clear filters"} className={blueButton}  onClick={(e) => setFilter(prev => ({ ...prev,arg:"",filterArg: "" }))}/>
+        {CATEGORI_GENRE.map((genre, index) => (
           
+          <Button
+            key={index}
+            value={genre}
+            className={blueButton}
+            onClick={(e) =>
+              setFilter(prev => ({
+                ...prev,
+                arg: e.target.value,
+                filterArg: "genre"
+              }))
+            }
+          />
+        ))}
+
+
+        <div className="flex items-center gap-2">
+          <p className="font-bold text-black">Alphabetic:</p>
+
+          <Button
+            value="A->Z"
+            key="atoz"
+            className={blueButton}
+            icon="alphabetic"
+            onClick={(e) =>
+              setFilter((prev) => ({
+                ...prev,
+                filterArg: e.target.value,
+              }))
+            }
+          />
         </div>
+
+        <div className="flex items-center gap-2">
+          <p className="font-bold text-black">Rating:</p>
+
+          <Button
+            value="Rating up"
+            key="rating"
+            className={blueButton}
+            icon={"ZeroToTen"}
+            onClick={(e) =>
+              setFilter((prev) => ({
+                ...prev,
+                filterArg:
+                  e.target.value === "Rating up" ? "rating-asc" : "rating-dsc",
+              }))
+            }
+          />
+        </div>
+
+        <Button
+          value="Clear filters"
+          className={blueButton}
+          onClick={() =>
+            setFilter((prev) => ({
+              ...prev,
+              arg: "",
+              filterArg: "",
+            }))
+          }
+        />
+      </div>
+
       { loading ?<p className="py-10 font-bold text-black">Loading Data stay close....</p>:
         <>
           <p>Showing {filteredMovies.length} results</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 items-start">
+            
             {filteredMovies.length > 0 ? filteredMovies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} updateStatus={updateStatus} />)) : <NothingToShow />}
+
           </div>
         </>}
   </> );

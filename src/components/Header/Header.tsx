@@ -1,9 +1,7 @@
-// src/components/Header.tsx
 import React, { FC } from "react";
 
 type HeaderProps = {
   className?: string;
-  userName: string;
 };
 
 const Header: FC<HeaderProps> = ({ className = ""}) => {

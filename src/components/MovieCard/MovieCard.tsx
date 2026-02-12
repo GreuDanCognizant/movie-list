@@ -1,5 +1,8 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { MovieItem } from "../../pages/HomePage/HomePage.types";
+import Icon from "../IconsManager/IconManager";
+import MovieInfoModal from "../MovieCardModal/MovieCardModal";
+import StatusMovieButtons from "../StatusOptionsButtons/StatusMovieButtons";
 
 interface MovieInfo{
     movie:MovieItem,
@@ -8,21 +11,27 @@ interface MovieInfo{
 }
 
 export const MovieCard:FC<MovieInfo>=({movie,updateStatus})=>{
-return(<div key={movie.id} className="bg-gray-700 shadow-lg rounded-xl p-4 flex flex-col items-center" > 
+    const [open, setOpen] = useState(false)
+    
+    return(
+    <div key={movie.id} className="bg-gray-700 shadow-lg rounded-xl p-4 flex flex-col items-center" > 
         <img src={`/assets/images/${movie.id}.jpg`} alt={movie.title} className="h-64" />
-        <h3 className="text-xl font-semibold">{movie.title}</h3> 
-        <p className="text-gray-600">Genre: {movie.genre}</p> 
-        <p className="text-gray-600">Rating: {movie.rating}</p> 
 
-        <div className="mt-3 w-full text-center bg-gray-100 py-2 rounded-md"> 
-            <span className="font-medium"> Status: {movie.status || "Not started"} </span> 
+        <h3 className="text-xl font-semibold">{movie.title}</h3> 
+
+        <p className="text-red-500"><strong>Genre:</strong> {movie.genre}</p> 
+
+        <p className="text-yellow-500"><strong>Rating:</strong>{movie.rating}</p> 
+
+        <div className="mt-3 w-full text-center  py-2 rounded-md justify-between gap-10 flex flex-row p-4"> 
+            <p className="font-medium flex items-center gap-2 text-sm text-green-400"> Status: {movie.status || "Not started"} </p> 
+
+            <p className="font-medium flex items-center gap-2 text-sm text-pink-500"> More Info <Icon value="MoreDetails" className="text-yellow-500" onClick={() => setOpen(true)}/> </p>
         </div> 
 
-        {updateStatus && <div className="flex flex-col gap-2 w-full mt-4"> 
-            <button onClick={() => updateStatus(movie.id, "Watched")} className="bg-green-500 hover:bg-green-600 text-white py-2 rounded-md" > Watched </button> 
-            <button onClick={() => updateStatus(movie.id, "In Progress")} className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-md" > In Progress </button> 
-            <button onClick={() => updateStatus(movie.id, "Start Watching")} className="bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md" > Start Watching </button> 
-      </div> }
+        {updateStatus && <StatusMovieButtons movieId={movie.id} updateStatus={updateStatus} />}
+
+        <MovieInfoModal movie={movie} open={open} onClose={()=>setOpen(false)}/>
     </div>)
 }
 
