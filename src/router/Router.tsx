@@ -1,16 +1,32 @@
-import { FC } from "react";
-import { Routes, Route } from "react-router-dom";
-import HomePage from "../pages/HomePage/HomePage";
-import WatchListPage from "../pages/WatchListPage/WatchListPage";
+import { lazy } from "react";
+import { createBrowserRouter } from "react-router-dom";
+import MainLayout from "../layouts/MainLayout";
+import MoviesPage from "../pages/MoviesPage/MoviesPage";
+import MovieDetailsPage from "../pages/MovieDetailsPage/MovieDetailsPage";
 
-const AppRouter: FC = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      
-      <Route path="/watched" element={<WatchListPage />} />
-    </Routes>
-  );
-};
+const HomePage = lazy(() => import("../pages/HomePage/HomePage"));
+const WatchListPage = lazy(() => import("../pages/WatchListPage/WatchListPage"));
 
-export default AppRouter;
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: < MainLayout/>, 
+    children: [
+      {
+        path: "home",
+        element: <HomePage />,
+      },
+      {
+        path: "watched",
+        element: <WatchListPage />,
+      },
+      {
+        path: "movies",
+        element: (
+          <MoviesPage/>
+        )
+      },
+      { path: "movie/:movieId", element: <MovieDetailsPage />, },
+    ],
+  },
+]);

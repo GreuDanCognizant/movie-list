@@ -8,7 +8,6 @@ import { CATEGORI_GENRE } from "../../constants/genre-enum";
 import { blueButton } from "../../constants/class-name-style";
 import { WatchedMovies } from "../../local-storage/localStorage.types";
 import NothingToShow from "../../components/NothingToShow/NothingToShow";
-import Icon from "../../components/IconsManager/IconManager";
 
 const HomePage: FC = () => {
   const [movies, setMovies] = useState<MovieItem[]>([]); 
@@ -99,8 +98,6 @@ const HomePage: FC = () => {
     <>
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap gap-4 items-center">
         <InputSearch placeholder="Search movies ..." value={inputValue} setValue={setInputValue} />
-
-        <Icon value={"FilterOpen"} className="pt-1 text-2xl"/>
 
         <p className="py-4 font-bold text-black">Genre:  </p>
 
